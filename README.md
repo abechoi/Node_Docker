@@ -5,6 +5,7 @@ Node.js & Express with Docker
 1. [Build](#build-docker-image)
 2. [Ports](#ports)
 3. [Volumes](#volumes)
+4. [Compose](#compose)
 
 ## Build Docker Image
 
@@ -26,7 +27,7 @@ docker run -p 4000:3000 -d --name node-app node-app-image
 Set ports using --env-file.
 
 ```
-docker run -v $(pwd):/app:ro -v /app/node_modules --env-file ./.env  -p 3000:4000 -d --name node-app node-app-image
+docker run --env-file ./.env  -p 3000:4000 -d --name node-app node-app-image
 ```
 
 ## Volumes
@@ -48,4 +49,35 @@ Attach an anonymous volume to ensure node_modules is never deleted from the dev 
 
 ```
 docker run -v $(pwd):/app:ro -v /app/node_modules -p 4000:3000 -d --name node-app node-app-image
+```
+
+Remove all inactive volumes
+
+```
+docker volume prune
+```
+
+Remove container with associated volume
+
+```
+docker rm -fv node-app
+```
+
+## Compose
+
+To build and run containers with a pre-configured file:
+
+1. Create a docker-compose.yaml
+2. Run up command
+
+```
+docker-compose up -d
+# to force a new build
+docker-compose up -d --build
+```
+
+3. Run down command
+
+```
+docker-compose down -v
 ```
