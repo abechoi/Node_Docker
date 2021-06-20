@@ -81,3 +81,30 @@ docker-compose up -d --build
 ```
 docker-compose down -v
 ```
+
+docker-compose can be configured to build different environments with different dependencies.
+
+Example: In package.json, by placing nodemon inside devDependencies, a NODE_ENV that is not equal to development, will not download it upon executing npm install.
+
+To change configs for development and production:
+
+1. Create docker-compose.dev.yaml and docker-compose.prod.yaml.
+2. Overwrite docker-compose.yaml using if statement in Dockerfile.
+
+Run dev
+
+```
+docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d --build
+```
+
+Run prod
+
+```
+docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d --build
+```
+
+Shutdown prod
+
+```
+docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml down -v
+```
