@@ -33,10 +33,60 @@ Build and run containers
 docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
 ```
 
-Connect to Mongo DB
+Connect to Mongo DB via CLI
 
 ```
 docker exec -it node_docker_mongo_1 mongo -u dbadmin -p dbpass
+```
+
+Connect to Mongo DB via Node.js & Express
+
+Install mongoose
+
+```
+npm install mongoose
+```
+
+Standard connection
+index.js
+
+```
+# URI = "mongodb://[DB_USERNAME]:[DB_PASSWORD]@[HOST]:[PORT]/?authSource=admin"
+mongoose
+  .connect("mongodb://dbadmin:dbpass@mongo:27017/?authSource=admin", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+  })
+  .then(() => console.log("Successfully connected to Mongo DB..."))
+  .catch((err) => console.log(err));
+
+app.get("/", (_, res) => {
+  res.send("<h1>Hello, World!</h1>");
+});
+```
+
+Loop Connection
+index.js
+
+```
+const connectWithRetry = () => {
+  mongoose
+    .connect(mongoURL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+      useCreateIndex: true,
+    })
+    .then(() => console.log("Successfully connected to Mongo DB..."))
+    .catch((err) => {
+      console.log(err);
+      setTimeout(connectWithRetry, 2000);
+    });
+};
+
+connectWithRetry();
 ```
 
 ## Commands

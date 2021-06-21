@@ -7,6 +7,7 @@ Node.js & Express with Docker
 3. [Volumes](#volumes)
 4. [Compose](#compose)
 5. [Database](#database)
+6. [Network](#network)
 
 ## Build Docker Image
 
@@ -111,3 +112,19 @@ docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml down -v
 ```
 
 ## Database
+
+See Mongo.md for more details.
+
+## Network
+
+list docker networks
+
+```
+docker network ls
+```
+
+inspect docket network
+
+```
+docker network inspect node_docker_default
+```
