@@ -1,6 +1,18 @@
 <h1 align="center">
-Production - Deploy on Ubuntu Server
+Deploying for Production
 </h1>
+
+## Configuration 1
+
+<p align="center">
+The workflow of this production configuration starts from git pull, docker-compose up --build, build image, and rebuild container. The downside to this configuation is that it is CPU intense to rebuild for every change.
+</p>
+
+## Configuration 2
+
+<p align="center">
+The workflow of this production configuration starts from git pull, docker-compose up --build, build image, and rebuild container. The downside to this configuation is that it is CPU intense to rebuild for every change.
+</p>
 
 1. SSH into production server and get docker and docker-compose.
 
@@ -49,4 +61,9 @@ git clone https://github.com/abechoi/Node_Docker
 
 ```
 docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d
+```
+
+```
+# build node-app without dependencies
+docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d --build --no-deps node-app
 ```
