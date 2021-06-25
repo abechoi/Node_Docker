@@ -65,7 +65,7 @@ app.use(
 app.use(express.json());
 
 app.get("/api/v1", (_, res) => {
-  res.send("<h1>Hello, World!!!!</h1>");
+  res.send("<h1>Hello, World!</h1>");
   console.log("TEST: SUCCESS!");
 });
 
