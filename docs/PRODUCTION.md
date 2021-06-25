@@ -8,7 +8,9 @@ Mongo DB with Docker
 
 ## Configuration
 
-SSH into production server and get docker and docker-compose
+SSH into production server and get docker and docker-compose.
+
+note: Ensure port 22 and 80 are opened.
 
 Ubuntu Linux
 
