@@ -1,14 +1,8 @@
 <h1 align="center">
-Mongo DB with Docker
+Production - Deploy on Ubuntu Server
 </h1>
 
-1. [Configuration](#configuration)
-2. [Connection](#connection)
-3. [Commands](#commands)
-
-## Configuration
-
-SSH into production server and get docker and docker-compose.
+1. SSH into production server and get docker and docker-compose.
 
 note: Ensure port 22 and 80 are opened.
 
@@ -23,6 +17,8 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-
 
 sudo chmod +x /usr/local/bin/docker-compose
 ```
+
+2. Create a .env and .profile.
 
 .env
 
@@ -43,92 +39,14 @@ MONGO_INITDB_ROOT_PASSWORD=dbpass
 set -o allexport; source /root/.env; set +o allexport;
 ```
 
-## Connection
-
-Build and run containers
+3. Get Git repo.
 
 ```
-docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
+git clone https://github.com/abechoi/Node_Docker
 ```
 
-Connect to Mongo DB via CLI
+4. Use docker compose to build and run.
 
 ```
-docker exec -it node_docker_mongo_1 mongo -u dbadmin -p dbpass
-```
-
-Connect to Mongo DB via Node.js & Express
-
-Install mongoose
-
-```
-npm install mongoose
-```
-
-Standard connection
-index.js
-
-```
-# URI = "mongodb://[DB_USERNAME]:[DB_PASSWORD]@[HOST]:[PORT]/?authSource=admin"
-mongoose
-  .connect("mongodb://dbadmin:dbpass@mongo:27017/?authSource=admin", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true,
-  })
-  .then(() => console.log("Successfully connected to Mongo DB..."))
-  .catch((err) => console.log(err));
-
-app.get("/", (_, res) => {
-  res.send("<h1>Hello, World!</h1>");
-});
-```
-
-Loop Connection
-index.js
-
-```
-const connectWithRetry = () => {
-  mongoose
-    .connect(mongoURL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-      useCreateIndex: true,
-    })
-    .then(() => console.log("Successfully connected to Mongo DB..."))
-    .catch((err) => {
-      console.log(err);
-      setTimeout(connectWithRetry, 2000);
-    });
-};
-
-connectWithRetry();
-```
-
-## Commands
-
-Display all databases
-
-```
-show dbs
-```
-
-Activate database named mydb
-
-```
-use mydb
-```
-
-Insert entry into books
-
-```
-db.books.insert({ "title": "How to Change Your Mind" })
-```
-
-Display all entries in books
-
-```
-db.books.find()
+docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d
 ```
