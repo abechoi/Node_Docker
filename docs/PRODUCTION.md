@@ -2,17 +2,7 @@
 Deploying for Production
 </h1>
 
-## Configuration 1
-
-<p align="center">
-The workflow of this production configuration starts from git pull, docker-compose up --build, build image, and rebuild container. The downside to this configuation is that it is CPU intense to rebuild for every change.
-</p>
-
-## Configuration 2
-
-<p align="center">
-The workflow of this production configuration starts from git pull, docker-compose up --build, build image, and rebuild container. The downside to this configuation is that it is CPU intense to rebuild for every change.
-</p>
+## Server Setup
 
 1. SSH into production server and get docker and docker-compose.
 
@@ -51,13 +41,68 @@ MONGO_INITDB_ROOT_PASSWORD=dbpass
 set -o allexport; source /root/.env; set +o allexport;
 ```
 
-3. Get Git repo.
+## Configuration 1
+
+<p align="center">
+The workflow of this production configuration starts from build image, push to dockerhub, pull from dockerhub, to rebuild.
+</p>
+
+1. Create Dockerhub repo.
+
+2. Build and push the image.
+
+```
+# initial
+docker image tag node_docker_node-app abechoi/node-app
+
+docker push abechoi/node-app
+```
+
+```
+# after initial
+docker compose -f docker-compose.yaml -f docker-compose.prod.yaml build node-app
+
+docker compose -f docker-compose.yaml -f docker-compose.prod.yaml push node-app
+```
+
+3. Configure docker-compose.yaml
+
+```
+services:
+  node-app:
+    build: .
+    image: abechoi/node-app
+```
+
+4. Pull from Dockerhub.
+
+```
+docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml pull node-app
+
+docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d --no-deps node-app
+```
+
+5. Pull from Dockerhub automatically.
+
+```
+# run watchtower and check image every 50 seconds
+docker run -d --name watchtower -e WATCHTOWER_TRACE=true -e WATCHTOWER_DEBUG=true -e WATCHTOWER_POLL_INTERVAL=50 -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower app_node-app_1
+
+```
+
+## Configuration 2
+
+<p align="center">
+The workflow of this production configuration starts from git pull, docker-compose up --build, build image, and rebuild container. The downside to this configuation is that it is CPU intense to rebuild for every change.
+</p>
+
+1. Get Git repo.
 
 ```
 git clone https://github.com/abechoi/Node_Docker
 ```
 
-4. Use docker compose to build and run.
+2. Use docker compose to build and run.
 
 ```
 docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d
@@ -66,4 +111,24 @@ docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d
 ```
 # build node-app without dependencies
 docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d --build --no-deps node-app
+```
+
+## Docker Swarm Ochestrator
+
+```
+docker swarm init --advertise-addr 143.198.59.179
+```
+
+docker-compose.prod.yaml
+
+```
+services:
+  node-app:
+    deploy:
+      replicas: 8
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 2
+        delay: 15s
 ```
