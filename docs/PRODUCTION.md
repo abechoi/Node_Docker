@@ -2,6 +2,11 @@
 Deploying for Production
 </h1>
 
+1. [Server Setup](#server-setup)
+2. [Configuration 1](#configuration-1)
+3. [Configuration 2](#configuration-2)
+4. [Docker Swarm](#docker-swarm)
+
 ## Server Setup
 
 1. SSH into production server and get docker and docker-compose.
@@ -113,22 +118,44 @@ docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d
 docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d --build --no-deps node-app
 ```
 
-## Docker Swarm Ochestrator
+## Docker Swarm
+
+1. Set IP Address for Docker swarm.
 
 ```
 docker swarm init --advertise-addr 143.198.59.179
 ```
 
-docker-compose.prod.yaml
+2. Reconfigure docker-compose.prod.yaml.
 
 ```
 services:
   node-app:
     deploy:
-      replicas: 8
+      replicas: 2
       restart_policy:
         condition: any
       update_config:
         parallelism: 2
         delay: 15s
+```
+
+3. Build and run swarm
+
+```
+docker stack deploy -c docker-compose.yaml -c docker-compose.prod.yaml my-app
+```
+
+4. Rebuild and push.
+
+```
+docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml build node-app
+
+docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml push node-app
+```
+
+5. Pull and run on server.
+
+```
+docker stack deploy -c docker-compose.yaml -c docker-compose.prod.yaml myapp
 ```
